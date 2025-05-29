@@ -3,12 +3,19 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const pool = require('./db');
 const connectMongoDB = require('./mongoConnection');
-const mongoose = require('mongoose'); // <-- add this!
+const mongoose = require('mongoose');
+const categoriesRoutes = require('./routes/categoriesRoutes');
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+
+
+
+
+
 
 app.use(cors());
 app.use(express.json());
@@ -36,6 +43,17 @@ app.get('/test-mongo', (req, res) => {
         res.status(500).json({ error: 'MongoDB not connected' });
     }
 });
+
+
+
+
+//ROUTES
+
+app.use('/api/categories', categoriesRoutes);
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

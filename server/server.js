@@ -5,6 +5,7 @@ const pool = require('./db');
 const connectMongoDB = require('./mongoConnection');
 const mongoose = require('mongoose');
 const categoriesRoutes = require('./routes/categoriesRoutes');
+const suppliersRoutes = require('./routes/suppliersRoutes');
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.get('/test-mongo', (req, res) => {
 //ROUTES
 
 app.use('/api/categories', categoriesRoutes);
+app.use('/api/suppliers', suppliersRoutes);
 
 
 

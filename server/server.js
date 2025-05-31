@@ -6,16 +6,13 @@ const connectMongoDB = require('./mongoConnection');
 const mongoose = require('mongoose');
 const categoriesRoutes = require('./routes/categoriesRoutes');
 const suppliersRoutes = require('./routes/suppliersRoutes');
+const itemsRoutes = require('./routes/itemsRoutes');
+const itemSuppliersRoutes=require('./routes/itemSuppliersRoutes')
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-
-
-
-
-
 
 
 app.use(cors());
@@ -52,6 +49,10 @@ app.get('/test-mongo', (req, res) => {
 
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/suppliers', suppliersRoutes);
+app.use('/api/items', itemsRoutes);
+app.use('/api/itemsuppliers', itemSuppliersRoutes);
+
+
 
 
 

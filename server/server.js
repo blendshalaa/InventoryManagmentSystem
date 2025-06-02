@@ -51,7 +51,7 @@ app.use('/api/categories', categoriesRoutes);
 app.use('/api/suppliers', suppliersRoutes);
 app.use('/api/items', itemsRoutes);
 app.use('/api/itemsuppliers', itemSuppliersRoutes);
-
+app.use('/api/inventory_logs', require('./routes/inventoryLogsRoutes'));
 
 
 

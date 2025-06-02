@@ -24,6 +24,7 @@ const Suppliers={
     deleteSup:async(supplier_id)=>{
         const result=await pool.query('DELETE FROM suppliers where supplier_id=$1 RETURNING *',
             [supplier_id]);
+        return result.rows[0];
     }
 }
 

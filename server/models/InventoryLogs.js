@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const { Pool } = require('pg');
-
+const Notifications = require('./Notifications');
 const url = process.env.MONGODB_URL;
 const client = new MongoClient(url);
 const dbName = 'inventory_db';
@@ -19,7 +19,6 @@ const InventoryLogs = {
         try {
             await client.connect();
             const db = client.db(dbName);
-            // Validate inputs
             const parsedItemId = parseInt(item_id, 10);
             const parsedQuantityChange = parseInt(quantity_change, 10);
             if (isNaN(parsedItemId) || parsedItemId <= 0) {
@@ -31,8 +30,7 @@ const InventoryLogs = {
             if (isNaN(parsedQuantityChange)) {
                 throw new Error('quantity_change must be an integer');
             }
-            // Check if item_id exists in items table
-            const itemCheck = await pgPool.query('SELECT item_id FROM items WHERE item_id = $1', [parsedItemId]);
+            const itemCheck = await pgPool.query('SELECT item_id, quantity FROM items WHERE item_id = $1', [parsedItemId]);
             if (itemCheck.rowCount === 0) {
                 throw new Error('Item does not exist');
             }
@@ -42,8 +40,19 @@ const InventoryLogs = {
                 quantity_change: parsedQuantityChange,
                 timestamp: new Date()
             };
-            console.log('Inserting log:', JSON.stringify(log, null, 2)); // Debug
+            console.log('Inserting log:', JSON.stringify(log, null, 2));
             const result = await db.collection('inventory_logs').insertOne(log);
+            // Check for low stock
+            const item = itemCheck.rows[0];
+            const newQuantity = item.quantity + (action === 'remove' ? -parsedQuantityChange : parsedQuantityChange);
+            if (newQuantity < 5) {
+                await Notifications.createNotification({
+                    item_id: parsedItemId,
+                    type: 'low_stock',
+                    message: `Item ${parsedItemId} stock is low: ${newQuantity} units remaining`,
+                    status: 'unread'
+                });
+            }
             return { _id: result.insertedId, ...log };
         } catch (err) {
             console.error('Create log error:', err);

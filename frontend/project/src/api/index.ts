@@ -1,5 +1,6 @@
 import axios from 'axios';
-import {Item, InventoryLog, Notification, Category} from '../types';
+import { Item, InventoryLog, Notification, Category } from '../types';
+import { useAuthStore } from '../store/authStore';
 
 // Configure axios instance
 const api = axios.create({
@@ -9,28 +10,36 @@ const api = axios.create({
   },
 });
 
+// Add JWT interceptor
+api.interceptors.request.use(
+    (config) => {
+      const token = useAuthStore.getState().token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 // Items API
 export const itemsApi = {
   getAll: async () => {
     const response = await api.get<Item[]>('/items');
     return response.data;
   },
-  
   getById: async (id: number) => {
     const response = await api.get<Item>(`/items/${id}`);
     return response.data;
   },
-  
   create: async (item: Omit<Item, 'item_id'>) => {
     const response = await api.post<Item>('/items', item);
     return response.data;
   },
-  
   update: async (id: number, item: Partial<Omit<Item, 'item_id'>>) => {
     const response = await api.put<Item>(`/items/${id}`, item);
     return response.data;
   },
-  
   delete: async (id: number) => {
     const response = await api.delete(`/items/${id}`);
     return response.data;
@@ -43,12 +52,10 @@ export const logsApi = {
     const response = await api.get<InventoryLog[]>('/inventory_logs');
     return response.data;
   },
-  
   getByItemId: async (itemId: number) => {
     const response = await api.get<InventoryLog[]>(`/inventory_logs/item/${itemId}`);
     return response.data;
   },
-  
   create: async (log: Omit<InventoryLog, '_id' | 'timestamp'>) => {
     const response = await api.post<InventoryLog>('/inventory_logs', log);
     return response.data;
@@ -61,12 +68,10 @@ export const notificationsApi = {
     const response = await api.get<Notification[]>('/notifications');
     return response.data;
   },
-  
   getByItemId: async (itemId: number) => {
     const response = await api.get<Notification[]>(`/notifications/item/${itemId}`);
     return response.data;
   },
-  
   create: async (notification: Omit<Notification, '_id' | 'timestamp' | 'status'>) => {
     const response = await api.post<Notification>('/notifications', {
       ...notification,
@@ -76,7 +81,7 @@ export const notificationsApi = {
   },
 };
 
-
+// Categories API
 export const categoriesApi = {
   getAll: async () => {
     const response = await api.get<Category[]>('/categories');

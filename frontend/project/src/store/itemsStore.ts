@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { itemsApi, categoriesApi } from '../api';
+import { itemsApi, categoriesApi } from '../api'
 import { Item, Category } from '../types';
 
 interface ItemsState {

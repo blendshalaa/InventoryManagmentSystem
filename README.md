@@ -23,7 +23,7 @@ The **Inventory Management System** is a full-stack web application designed to 
     - Lucide React (icons)
 - **Backend**:
     - Node.js, Express
-    - PostgreSQL with `pg` (database)
+    - PostgreSQL with `pg` (database), MongoDB
     - JWT (authentication)
     - Bcrypt (password hashing)
 - **Tools**:
